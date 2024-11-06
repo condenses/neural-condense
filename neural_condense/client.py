@@ -8,6 +8,16 @@ from huggingface_hub import HfApi
 from safetensors.torch import load_model
 import torch.nn as nn
 import torch
+import base64
+import io
+import numpy as np
+import torch
+
+
+def base64_to_tensor(base64_str: str) -> torch.Tensor:
+    decoded = base64.b64decode(base64_str)
+    buf = io.BytesIO(decoded)
+    return torch.from_numpy(np.load(buf).astype(np.float32))
 
 
 class CondenseClient:
@@ -66,19 +76,20 @@ class CondenseClient:
             timeout=32,
         )
         response.raise_for_status()
-        condensed_tokens = response.json()["compressed_tokens"]
-        condensed_tokens = torch.tensor(condensed_tokens)
-        prompt_tokens = None
+        condensed_tokens = response.json()["compressed_tokens_b64"]
+        condensed_tokens = base64_to_tensor(condensed_tokens)
+        prompt_embeds = None
         inputs_embeds = None
         if prompt:
             prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
             prompt_embeds = self.embeddings(prompt_ids)
+            prompt_embeds = prompt_embeds.squeeze(0)
             inputs_embeds = torch.cat([condensed_tokens, prompt_embeds], dim=0)
             inputs_embeds = inputs_embeds.unsqueeze(0)
         print(f"Condensed into {condensed_tokens.shape} tokens")
         return ClientResponse(
             condensed_tokens=condensed_tokens,
-            prompt_tokens=prompt_tokens,
+            prompt_tokens=prompt_embeds,
             inputs_embeds=inputs_embeds,
         )
 
@@ -136,18 +147,19 @@ class AsyncCondenseClient:
             timeout=32,
         )
         response.raise_for_status()
-        condensed_tokens = response.json()["condensed_tokens"]
-        condensed_tokens = torch.tensor(condensed_tokens)
-        prompt_tokens = None
+        condensed_tokens = response.json()["condensed_tokens_b64"]
+        condensed_tokens = base64_to_tensor(condensed_tokens)
+        prompt_embeds = None
         inputs_embeds = None
         if prompt:
             prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
             prompt_embeds = self.embeddings(prompt_ids)
+            prompt_embeds = prompt_embeds.squeeze(0)
             inputs_embeds = torch.cat([condensed_tokens, prompt_embeds], dim=0)
             inputs_embeds = inputs_embeds.unsqueeze(0)
         print(f"Condensed into {condensed_tokens.shape} tokens")
         return ClientResponse(
             condensed_tokens=condensed_tokens,
-            prompt_tokens=prompt_tokens,
+            prompt_tokens=prompt_embeds,
             inputs_embeds=inputs_embeds,
         )

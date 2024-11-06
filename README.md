@@ -30,21 +30,39 @@ client = CondenseClient(
   model_name="mistralai/Mistral-7B-Instruct-v0.2"
 )
 
-# Define a long context and focused prompt
-messages = [
+# Define a long context and focused prompt.
+context_messages = [
   {
     "role": "user",
-    "content": "Many of you think that EPL and other salary levels are similar, but you are wrong. In EPL, the media glosses over pre-tax salary information, while in Serie A they deal with salary. That means the salary that Milan must pay Donnarumma if they agree to sign the contract is 24m/season + 20m in salary. No one pays that much money for a goalkeeper... What is the salary that Milan must pay Donnarumma if they agree to sign the contract?"
+    "content": (
+        "I've been researching the various health benefits of a Mediterranean diet, which includes a high intake of fruits, vegetables, whole grains, legumes, and olive oil, "
+        "along with moderate amounts of fish and poultry, and very little red meat. The diet is well-known for reducing risks of heart disease, lowering cholesterol levels, "
+        "and even helping with weight management. One study I read highlighted that people who follow this diet closely tend to have lower rates of cognitive decline and dementia, "
+        "which is something I find particularly fascinating. Additionally, I came across information suggesting that the Mediterranean diet is associated with greater longevity, "
+        "especially when combined with a healthy lifestyle. This kind of diet seems quite sustainable too, as it doesn't involve strict calorie counting or excluding entire food groups. "
+        "I'm considering making the switch, but I'm curious if the health benefits are truly as significant as they seem, especially compared to other popular diets like the DASH diet or keto."
+    )
   },
   {
     "role": "assistant",
-    "content": f"The salary that Milan must pay Donnarumma if they agree to sign the contract is 24m/season + 20m in salary. {SAT_TOKEN}"
+    "content": (
+        "The Mediterranean diet indeed has numerous proven health benefits. Its emphasis on whole foods and healthy fats, particularly from olive oil, plays a big role in promoting heart health. "
+        "Studies do support the link between this diet and lower risks of heart disease, better cognitive health, and potentially longer life expectancy. Unlike restrictive diets, the Mediterranean approach is sustainable and doesn’t require avoiding major food groups, making it more practical for many people. "
+        "It's also worth noting that the Mediterranean diet is flexible, which makes it easier for individuals to maintain long-term compared to more restrictive diets like keto. "
+    )
   },
+]
+
+# Add the SAT_TOKEN to separate the context and prompt.
+context_messages[-1]["content"] += SAT_TOKEN
+
+prompt_messages = [
   {
     "role": "user",
-    "content": "Who is Donnarumma?"
+    "content": "How does the Mediterranean diet compare to the DASH diet in terms of health benefits?"
   }
 ]
+messages = context_messages + prompt_messages
 
 # Generate condensed tokens
 condensed_output = client.create_condensed_tokens(

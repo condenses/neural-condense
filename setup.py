@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="neural_condense",  # Your package name
-    version="0.0.2",  # Initial version
+    version="0.0.4",  # Initial version
     author="CondenseAI",  # Your name
     author_email="",  # Your email
     description="Wrapped API for Neural Condense Subnet - Bittensor",
