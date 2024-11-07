@@ -2,8 +2,6 @@ from pydantic import BaseModel
 import torch
 
 
-class CondenseHeader(BaseModel):
-    CONDENSE_API_KEY: str
 
 
 class CondensePayload(BaseModel):

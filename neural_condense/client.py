@@ -30,7 +30,7 @@ class CondenseClient:
         self.model_name = model_name
         self.base_url = base_url or BASE_URL
         self.api_key = api_key
-        self.headers = CondenseHeader(CONDENSE_API_KEY=api_key)
+        self.headers = {"user-api-key": api_key}
         self.client = httpx.Client(base_url=self.base_url)
         self.tokenizer = AutoTokenizer.from_pretrained(
             INPUT_EMBEDDINGS_METADATA[model_name]["repo_id"]
@@ -54,6 +54,7 @@ class CondenseClient:
         tier: str,
         miner_uid: int = -1,
         top_incentive: float = 0.9,
+        timeout: int = 32,
     ) -> ClientResponse:
         messages_str = self.tokenizer.apply_chat_template(messages, tokenize=False)
         if SAT_TOKEN not in messages_str:
@@ -71,9 +72,9 @@ class CondenseClient:
         )
         response = self.client.post(
             "/api/organic",
-            headers=self.headers.model_dump(),
+            headers=self.headers,
             json=payload.model_dump(),
-            timeout=32,
+            timeout=timeout,
         )
         response.raise_for_status()
         condensed_tokens = response.json()["compressed_tokens_b64"]
@@ -104,7 +105,7 @@ class AsyncCondenseClient:
         self.model_name = model_name
         self.base_url = base_url or BASE_URL
         self.api_key = api_key
-        self.headers = CondenseHeader(CONDENSE_API_KEY=api_key)
+        self.headers = {"user-api-key": api_key}
         self.client = httpx.AsyncClient(base_url=self.base_url)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.hf_api = HfApi()
@@ -125,6 +126,7 @@ class AsyncCondenseClient:
         tier: str,
         miner_uid: int = -1,
         top_incentive: float = 0.9,
+        timeout: int = 32,
     ) -> ClientResponse:
         messages_str = self.tokenizer.apply_chat_template(messages, tokenize=False)
         if SAT_TOKEN not in messages_str:
@@ -142,9 +144,9 @@ class AsyncCondenseClient:
         )
         response = await self.client.post(
             "/api/organic",
-            headers=self.headers.model_dump(),
+            headers=self.headers,
             json=payload.model_dump(),
-            timeout=32,
+            timeout=timeout,
         )
         response.raise_for_status()
         condensed_tokens = response.json()["condensed_tokens_b64"]
