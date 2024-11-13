@@ -8,6 +8,19 @@
 ## 🌟 Overview
 The Neural Condense Subnet (NCS) library provides an efficient and intuitive interface to compress extensive input contexts into concise, high-relevance formats. This optimization is especially beneficial when working with large language models (LLMs) that have token limitations, as it allows you to maximize the use of input constraints, enhancing inference efficiency.
 
+### Benchmark
+
+**Notebook**: [Benchmark Neural Condense](./docs/benchmark_neural_condense.ipynb)
+
+**Dataset**: 2wikimqa - LongBench
+
+**Model**: Mistral-7B-Instruct-v0.2
+
+<div align="center">
+  <img src="./docs/benchmark.png" alt="Benchmark Plots" width="75%"/>
+</div>
+
+
 ## 📦 Installation
 Install the library using pip:
 ```bash
@@ -122,3 +135,5 @@ The `SAT_TOKEN` acts as a delimiter within your message templates, separating co
 ### API Parameters
 - **tier**: Specify the inference tier, which affects the quality and speed of token condensation.
 - **target_model**: Set the target model to shape the condensed output according to the requirements of the chosen language model.
+
+

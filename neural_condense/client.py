@@ -82,7 +82,7 @@ class CondenseClient:
         prompt_embeds = None
         inputs_embeds = None
         if prompt:
-            prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
+            prompt_ids = self.tokenizer(prompt, return_tensors="pt", add_special_tokens=False)["input_ids"]
             prompt_embeds = self.embeddings(prompt_ids)
             prompt_embeds = prompt_embeds.squeeze(0)
             inputs_embeds = torch.cat([condensed_tokens, prompt_embeds], dim=0)
